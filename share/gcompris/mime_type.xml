@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MimeTypeRoot>
+  <MimeType
+             mimetype="image/gcompris+anim"
+             extension=".gcanim"
+             icon="gcompris/mimetypes/icons/gcompris+anim.png">
+             <description>gcompris animation</description>
+  </MimeType>
+  <MimeType
+             mimetype="image/gcompris+draw"
+             extension=".gcdraw"
+             icon="gcompris/mimetypes/icons/gcompris+draw.png">
+             <description>gcompris drawing</description>
+  </MimeType>
+  <MimeType
+             mimetype="image/svg+xml+javascript"
+             extension=".xml"
+             icon="gcompris/mimetypes/icons/svg+xml+javascript.png">
+             <description>svg mozilla animation</description>
+  </MimeType>
+  <MimeType
+             mimetype="image/svg+xml"
+             extension=".svg"
+             icon="gcompris/mimetypes/icons/svg+xml.png">
+             <description>svg drawing</description>
+  </MimeType>
+  <MimeType
+             mimetype="wordprocessor/xhtml"
+             extension=".xhtml"
+             icon="gcompris/mimetypes/icons/wordprocessor+html.png">
+             <description>wordprocessor text</description>
+  </MimeType>
+</MimeTypeRoot>

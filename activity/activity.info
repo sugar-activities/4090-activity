@@ -1,0 +1,10 @@
+[Activity]
+name = GComprisContent
+activity_version = 12
+host_version = 1
+service_name = net.gcompris.content
+bundle_id = net.gcompris.content
+icon = root
+exec = gcompris-activity 
+show_launcher = yes
+license = GPLv3+

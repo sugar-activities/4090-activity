@@ -1,0 +1,84 @@
+#!/bin/sh
+# Author: Bert Freudenberg. Adapted to GCompris by Bruno Coudoin.
+# Purpose: Run GCompris
+#
+# This version of gcompris-activity is called only under new Sugar
+# (Joyride/Update.1). There is another one in the bundle's root
+# directory called under old Sugar which was pre-installed on the
+# first mass-produced machines (Trial-3/Ship.1).
+
+# arguments are unordered, have to loop
+args=""
+while [ -n "$2" ] ; do
+    case "$1" in
+      	-b | --bundle-id)
+            args="$args --sugarBundleId=$2"
+            shift
+            ;;
+      	-a | --activity-id)
+            args="$args --sugarActivityId=$2"
+            shift
+            ;;
+        *)  args="$args $1"
+            ;;
+    esac
+    shift
+done
+
+echo "$0" "$args"
+echo
+
+# sanitize
+[ -z "$SUGAR_PROFILE" ] && SUGAR_PROFILE=default
+[ -z "$SUGAR_ACTIVITY_ROOT" ] && SUGAR_ACTIVITY_ROOT="$HOME/.sugar/$SUGAR_PROFILE/gcompris"
+
+echo SUGAR_ACTIVITY_ROOT=$SUGAR_ACTIVITY_ROOT
+echo
+
+# rainbow-enforced locations
+export GCOMPRIS_SECUREDIR="$SUGAR_ACTIVITY_ROOT/data/private"
+export GCOMPRIS_USERDIR="$SUGAR_ACTIVITY_ROOT/data/MyGcompris"
+
+# make group-writable for rainbow
+umask 0002
+[ ! -d "$GCOMPRIS_SECUREDIR" ] && mkdir -p "$GCOMPRIS_SECUREDIR" && chmod o-rwx "$GCOMPRIS_SECUREDIR"
+[ ! -d "$GCOMPRIS_USERDIR" ] && mkdir -p "$GCOMPRIS_USERDIR"
+
+# do not crash on dbus errors
+export DBUS_FATAL_WARNINGS=0
+
+################################################################################
+
+if [ -d ../GComprisContent.activity -a $(basename $PWD) != "GComprisContent.activity" ]; then
+    (cd share/skins; ln -fs ../../../GComprisContent.activity/share/skins/* .)
+    (cd share/; ln -fs ../../GComprisContent.activity/share/sounds .)
+    (cd share/; ln -fs ../../GComprisContent.activity/share/music .)
+    (cd share/; ln -fs ../../GComprisContent.activity/share/voices .)
+fi
+
+ARCH=`arch | grep x86_64 || echo x86`
+
+PYVER=$(python -c 'import sys; print "%d%d" % sys.version_info[0:2]')
+if [ -f $SUGAR_BUNDLE_PATH/lib/$ARCH/libpython.so.$PYVER ]; then
+    ln -fs $SUGAR_BUNDLE_PATH/lib/$ARCH/libpython.so.$PYVER $SUGAR_BUNDLE_PATH/lib/$ARCH/libpython.so
+fi
+
+if [ "$SUGAR_LOGGER_LEVEL" ]; then
+    args="$args --debug"
+fi
+
+PATH=$SUGAR_BUNDLE_PATH/bin/$ARCH:$PATH
+
+# now run Gcompris
+exec $SUGAR_BUNDLE_PATH/bin/$ARCH/gcompris \
+    --config-dir $GCOMPRIS_USERDIR \
+    --user-dir $GCOMPRIS_USERDIR \
+    --package_data_dir $SUGAR_BUNDLE_PATH/share \
+    --package_locale_dir $SUGAR_BUNDLE_PATH/locale \
+    --package_plugin_dir $SUGAR_BUNDLE_PATH/lib/$ARCH \
+    --package_python_plugin_dir $SUGAR_BUNDLE_PATH/share/python \
+    --drag-mode=2clicks \
+    --nolockcheck \
+    --sound \
+    --maximize \
+    $args
